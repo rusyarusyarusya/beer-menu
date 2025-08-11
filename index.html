@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hop House - Меню</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c1810 50%, #1a1a1a 100%);
+            color: #f5f5f5;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px 10px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .header {
+            background: linear-gradient(45deg, #ff8c00, #ffc107);
+            padding: 30px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '🍺';
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            font-size: 80px;
+            opacity: 0.1;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .header::after {
+            content: '🍺';
+            position: absolute;
+            bottom: -20px;
+            left: -20px;
+            font-size: 60px;
+            opacity: 0.1;
+            animation: float 3s ease-in-out infinite reverse;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            color: #1a1a1a;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #2c1810;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .menu-content {
+            padding: 0 20px 20px;
+        }
+
+        .category {
+            margin: 25px 0;
+            animation: slideIn 0.6s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .category-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: linear-gradient(45deg, #333, #444);
+            border-radius: 12px;
+            border-left: 4px solid #ffc107;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-title::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 40%, rgba(255, 193, 7, 0.1) 50%, transparent 60%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .featured-category {
+            background: linear-gradient(45deg, #ff8c00, #ffc107) !important;
+            color: #1a1a1a !important;
+            border-left: 4px solid #1a1a1a !important;
+            box-shadow: 0 8px 20px rgba(255, 140, 0, 0.3);
+            transform: scale(1.02);
+            font-size: 1.6em !important;
+            text-align: center;
+            position: relative;
+        }
+
+        .featured-category::before {
+            content: '⭐ ГЛАВНЫЕ ХИТЫ ⭐';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.4em;
+            background: #1a1a1a;
+            color: #ffc107;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: normal;
+        }
+
+        .menu-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 193, 7, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .menu-item:hover {
+            background: rgba(255, 193, 7, 0.1);
+            border-radius: 8px;
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+
+        .menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .item-info {
+            flex: 1;
+            margin-right: 15px;
+        }
+
+        .item-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            color: #ffc107;
+            margin-bottom: 3px;
+        }
+
+        .item-description {
+            font-size: 0.85em;
+            color: #cccccc;
+            line-height: 1.4;
+        }
+
+        .item-price {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #ff8c00;
+            white-space: nowrap;
+            background: rgba(255, 140, 0, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 140, 0, 0.3);
+        }
+
+        .beer-icon {
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-5px); }
+            60% { transform: translateY(-3px); }
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            font-size: 0.9em;
+            color: #888;
+        }
+
+        .wifi-code {
+            background: rgba(255, 193, 7, 0.1);
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
+            border: 1px dashed #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span class="beer-icon">🍺</span> HOP HOUSE</h1>
+            <div class="subtitle">Крафтовый пивной бар</div>
+        </div>
+
+        <div class="menu-content">
+            <!-- Салаты -->
+            <div class="category">
+                <div class="category-title">🥗 Салаты</div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Цезарь с курицей</div>
+                        <div class="item-description">Листья романо, курица гриль, пармезан, соус цезарь</div>
+                    </div>
+                    <div class="item-price">450₽</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Пивной салат</div>
+                        <div class="item-description">Микс салатов, бекон, крутоны, пивная заправка</div>
+                    </div>
+                    <div class="item-price">390₽</div>
+                </div>
+            </div>
+
+            <!-- Горячие закуски -->
+            <div class="category">
+                <div class="category-title">🔥 Горячие закуски</div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Куриные крылья BBQ</div>
+                        <div class="item-description">8 шт. с соусом барбекю и сельдереем</div>
+                    </div>
+                    <div class="item-price">520₽</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Сырные палочки</div>
+                        <div class="item-description">Моцарелла в панировке, соус маринара</div>
+                    </div>
+                    <div class="item-price">380₽</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Кольца кальмара</div>
+                        <div class="item-description">В хрустящей панировке с чесночным соусом</div>
+                    </div>
+                    <div class="item-price">460₽</div>
+                </div>
+            </div>
+
+            <!-- Пивные тарелки - Featured -->
+            <div class="category">
+                <div class="category-title featured-category">🍺 Пивные тарелки</div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Мега тарелка</div>
+                        <div class="item-description">Колбаски, ребрышки, крылья, сыры, соленья</div>
+                    </div>
+                    <div class="item-price">1290₽</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Баварская тарелка</div>
+                        <div class="item-description">Колбаски, квашеная капуста, картофель</div>
+                    </div>
+                    <div class="item-price">890₽</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Сырная тарелка</div>
+                        <div class="item-description">5 видов сыра, орехи, виноград, крекеры</div>
+                    </div>
+                    <div class="item-price">720₽</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Мясная тарелка</div>
+                        <div class="item-description">Ассорти колбас, копчености, горчица</div>
+                    </div>
+                    <div class="item-price">950₽</div>
+                </div>
+            </div>
+
+            <!-- Бургеры -->
+            <div class="category">
+                <div class="category-title">🍔 Бургеры</div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Хоп Бургер</div>
+                        <div class="item-description">Говядина, чеддер, бекон, пивной соус</div>
+                    </div>
+                    <div class="item-price">650₽</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Чикен Бургер</div>
+                        <div class="item-description">Куриная грудка, моцарелла, томат</div>
+                    </div>
+                    <div class="item-price">580₽</div>
+                </div>
+            </div>
+
+            <!-- Пицца -->
+            <div class="category">
+                <div class="category-title">🍕 Пицца</div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Пепперони</div>
+                        <div class="item-description">Томатный соус, моцарелла, пепперони</div>
+                    </div>
+                    <div class="item-price">690₽</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Мясная</div>
+                        <div class="item-description">4 вида мяса, томатный соус, сыры</div>
+                    </div>
+                    <div class="item-price">790₽</div>
+                </div>
+            </div>
+
+            <!-- Дополнительно -->
+            <div class="category">
+                <div class="category-title">➕ Дополнительно</div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Соусы</div>
+                        <div class="item-description">BBQ, Чесночный, Острый, Сырный</div>
+                    </div>
+                    <div class="item-price">80₽</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Картофель фри</div>
+                        <div class="item-description">Хрустящий картофель с специями</div>
+                    </div>
+                    <div class="item-price">250₽</div>
+                </div>
+                <div class="menu-item">
+                    <div class="item-info">
+                        <div class="item-name">Луковые кольца</div>
+                        <div class="item-description">В пивном кляре</div>
+                    </div>
+                    <div class="item-price">290₽</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div>Время работы: 12:00 - 02:00</div>
+            <div class="wifi-code">
+                📶 WiFi: HopHouse | Пароль: beer2025
+            </div>
+        </div>
+    </div>
+</body>
+</html>
