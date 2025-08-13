@@ -220,6 +220,67 @@
             margin-top: 10px;
             border: 1px dashed #ffc107;
         }
+        /* --- Added: interactive styles for cart and modals --- */
+        .menu-item { cursor: pointer; }
+        .cart-sticky {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 1000;
+        }
+        .cart-button {
+            background: linear-gradient(45deg, #ff8c00, #ffc107);
+            color: #1a1a1a;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            cursor: pointer;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .cart-button small { color: #3b2a00; font-weight: 600; }
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1100;
+            padding: 16px;
+        }
+        .modal-backdrop.show { display: flex; }
+        .modal {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid rgba(255,193,7,0.3);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .modal-title { font-weight: 700; font-size: 1.2em; color: #ffc107; }
+        .icon-button { background: transparent; border: none; color: #ffc107; font-size: 1.4em; cursor: pointer; }
+        .cart-items { max-height: 300px; overflow-y: auto; border-top: 1px solid rgba(255,193,7,0.2); border-bottom: 1px solid rgba(255,193,7,0.2); }
+        .cart-row { display: grid; grid-template-columns: 1fr auto auto auto; gap: 10px; align-items: center; padding: 10px 0; border-bottom: 1px dashed rgba(255,193,7,0.2); }
+        .cart-row:last-child { border-bottom: none; }
+        .qty-controls { display: flex; gap: 8px; align-items: center; }
+        .qty-btn { background: rgba(255,193,7,0.1); border: 1px solid rgba(255,193,7,0.4); color: #ffc107; width: 28px; height: 28px; border-radius: 6px; cursor: pointer; }
+        .remove-btn { background: transparent; border: none; color: #ff6b6b; cursor: pointer; font-size: 0.95em; }
+        .cart-summary { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; }
+        .primary-btn { background: linear-gradient(45deg, #ff8c00, #ffc107); color: #1a1a1a; border: none; padding: 10px 14px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .secondary-btn { background: rgba(255,193,7,0.1); color: #ffc107; border: 1px solid rgba(255,193,7,0.4); padding: 10px 14px; border-radius: 10px; cursor: pointer; }
+        .muted { color: #bbb; font-size: 0.9em; }
+        .confirm-body { display: grid; gap: 10px; }
+        .table-input { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,193,7,0.4); background: rgba(255,193,7,0.05); color: #fff; }
+        .helper { font-size: 0.85em; color: #aaa; }
+        .success { color: #27d17f; font-weight: 700; }
+        .error { color: #ff6b6b; font-weight: 700; }
+        /* --- end added styles --- */
     </style>
 </head>
 <body>
@@ -380,5 +441,252 @@
             </div>
         </div>
     </div>
+
+    <!-- Cart sticky button -->
+    <div class="cart-sticky" id="cartSticky" style="display:none;">
+        <button class="cart-button" id="openCartBtn">🛒 Корзина <small id="cartSummary">(0) • 0₽</small></button>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal-backdrop" id="cartModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Корзина</div>
+                <button class="icon-button" id="closeCartBtn">✖</button>
+            </div>
+            <div class="muted">Нажмите на блюдо в меню, чтобы добавить в корзину</div>
+            <div class="cart-items" id="cartItems"></div>
+            <div class="cart-summary">
+                <div><strong>Итого:</strong> <span id="cartTotal">0₽</span></div>
+                <div style="display:flex; gap:10px;">
+                    <button class="secondary-btn" id="clearCartBtn">Очистить</button>
+                    <button class="primary-btn" id="checkoutBtn">Оформить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="modal-backdrop" id="confirmModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Подтверждение заказа</div>
+                <button class="icon-button" id="closeConfirmBtn">✖</button>
+            </div>
+            <div class="confirm-body">
+                <div class="muted">Проверьте позиции и укажите номер столика (1–100).</div>
+                <div id="confirmList" class="muted"></div>
+                <label>
+                    Номер столика:
+                    <input class="table-input" type="number" id="tableInput" min="1" max="100" placeholder="Например: 12" />
+                </label>
+                <div class="helper">Доступны только числа от 1 до 100</div>
+                <div style="display:flex; gap:10px; justify-content:flex-end;">
+                    <button class="secondary-btn" id="backToCartBtn">Назад</button>
+                    <button class="primary-btn" id="confirmOrderBtn">Подтвердить</button>
+                </div>
+                <div id="confirmStatus" class="muted"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function(){
+        const formatCurrency = (n) => `${n.toLocaleString('ru-RU')}₽`;
+        const cart = new Map(); // key: name, value: { name, price, qty }
+
+        const els = {
+            cartSticky: document.getElementById('cartSticky'),
+            cartSummary: document.getElementById('cartSummary'),
+            openCartBtn: document.getElementById('openCartBtn'),
+            cartModal: document.getElementById('cartModal'),
+            closeCartBtn: document.getElementById('closeCartBtn'),
+            cartItems: document.getElementById('cartItems'),
+            cartTotal: document.getElementById('cartTotal'),
+            clearCartBtn: document.getElementById('clearCartBtn'),
+            checkoutBtn: document.getElementById('checkoutBtn'),
+            confirmModal: document.getElementById('confirmModal'),
+            closeConfirmBtn: document.getElementById('closeConfirmBtn'),
+            backToCartBtn: document.getElementById('backToCartBtn'),
+            confirmOrderBtn: document.getElementById('confirmOrderBtn'),
+            confirmList: document.getElementById('confirmList'),
+            tableInput: document.getElementById('tableInput'),
+            confirmStatus: document.getElementById('confirmStatus'),
+        };
+
+        function parsePrice(text){
+            const digits = (text || '').replace(/[^0-9]/g,'');
+            return Number.parseInt(digits || '0', 10);
+        }
+
+        function addToCart(name, price){
+            const key = name.trim();
+            const existing = cart.get(key);
+            if (existing){
+                existing.qty += 1;
+            } else {
+                cart.set(key, { name: key, price, qty: 1 });
+            }
+            updateSticky();
+        }
+
+        function decFromCart(name){
+            const item = cart.get(name);
+            if (!item) return;
+            item.qty -= 1;
+            if (item.qty <= 0) cart.delete(name);
+            updateSticky();
+        }
+
+        function removeFromCart(name){
+            cart.delete(name);
+            updateSticky();
+        }
+
+        function getTotals(){
+            let totalQty = 0; let totalSum = 0;
+            for (const { price, qty } of cart.values()){
+                totalQty += qty;
+                totalSum += price * qty;
+            }
+            return { totalQty, totalSum };
+        }
+
+        function updateSticky(){
+            const { totalQty, totalSum } = getTotals();
+            if (totalQty > 0){
+                els.cartSticky.style.display = 'block';
+                els.cartSummary.textContent = `(${totalQty}) • ${formatCurrency(totalSum)}`;
+            } else {
+                els.cartSticky.style.display = 'none';
+            }
+            renderCart();
+        }
+
+        function renderCart(){
+            const { totalSum } = getTotals();
+            els.cartTotal.textContent = formatCurrency(totalSum);
+            const rows = [];
+            for (const item of cart.values()){
+                const lineTotal = item.price * item.qty;
+                rows.push(
+                    `<div class="cart-row" data-name="${item.name}">
+                        <div>
+                            <div style="color:#ffc107; font-weight:600;">${item.name}</div>
+                            <div class="muted">${formatCurrency(item.price)} × ${item.qty} = ${formatCurrency(lineTotal)}</div>
+                        </div>
+                        <div class="qty-controls">
+                            <button class="qty-btn" data-action="dec">−</button>
+                            <span>${item.qty}</span>
+                            <button class="qty-btn" data-action="inc">+</button>
+                        </div>
+                        <div style="white-space:nowrap;">${formatCurrency(lineTotal)}</div>
+                        <button class="remove-btn" data-action="remove">удалить</button>
+                    </div>`
+                );
+            }
+            els.cartItems.innerHTML = rows.join('') || '<div class="muted" style="padding:12px;">Корзина пуста</div>';
+        }
+
+        function openModal(backdrop){ backdrop.classList.add('show'); }
+        function closeModal(backdrop){ backdrop.classList.remove('show'); }
+
+        // Bind cart modal open/close
+        els.openCartBtn.addEventListener('click', () => openModal(els.cartModal));
+        els.closeCartBtn.addEventListener('click', () => closeModal(els.cartModal));
+        els.cartModal.addEventListener('click', (e)=>{ if (e.target === els.cartModal) closeModal(els.cartModal); });
+
+        els.clearCartBtn.addEventListener('click', () => { cart.clear(); updateSticky(); });
+
+        // Cart items actions (inc/dec/remove)
+        els.cartItems.addEventListener('click', (e)=>{
+            const btn = e.target.closest('button');
+            if (!btn) return;
+            const row = btn.closest('.cart-row');
+            const name = row?.dataset?.name;
+            if (!name) return;
+            const action = btn.dataset.action;
+            if (action === 'inc') addToCart(name, cart.get(name)?.price || 0);
+            if (action === 'dec') decFromCart(name);
+            if (action === 'remove') removeFromCart(name);
+        });
+
+        // Checkout -> open confirm
+        els.checkoutBtn.addEventListener('click', ()=>{
+            const { totalQty } = getTotals();
+            if (totalQty === 0){
+                alert('Корзина пуста');
+                return;
+            }
+            const lines = [];
+            for (const item of cart.values()){
+                lines.push(`• ${item.name} — ${formatCurrency(item.price)} × ${item.qty} = ${formatCurrency(item.price * item.qty)}`);
+            }
+            const total = formatCurrency(getTotals().totalSum);
+            els.confirmList.innerHTML = `<div>${lines.join('<br>')}</div><div style="margin-top:8px;"><strong>Итого: ${total}</strong></div>`;
+            els.tableInput.value = '';
+            els.confirmStatus.textContent = '';
+            closeModal(els.cartModal);
+            openModal(els.confirmModal);
+        });
+
+        // Confirm modal actions
+        els.closeConfirmBtn.addEventListener('click', ()=> closeModal(els.confirmModal));
+        els.backToCartBtn.addEventListener('click', ()=> { closeModal(els.confirmModal); openModal(els.cartModal); });
+
+        els.confirmOrderBtn.addEventListener('click', async ()=>{
+            const tableNum = Number.parseInt(els.tableInput.value || '');
+            if (!Number.isInteger(tableNum) || tableNum < 1 || tableNum > 100){
+                els.confirmStatus.textContent = 'Введите номер столика от 1 до 100';
+                els.confirmStatus.className = 'error';
+                return;
+            }
+            const items = Array.from(cart.values()).map(({name, price, qty})=>({ name, price, quantity: qty }));
+            const total = getTotals().totalSum;
+            els.confirmOrderBtn.disabled = true;
+            els.confirmOrderBtn.textContent = 'Отправка...';
+            els.confirmStatus.textContent = '';
+            try {
+                const resp = await fetch('/api/order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ items, total, table: tableNum })
+                });
+                if (!resp.ok){
+                    throw new Error(`Ошибка сервера: ${resp.status}`);
+                }
+                const data = await resp.json();
+                if (data && data.ok){
+                    const orderId = data.orderId || '—';
+                    els.confirmStatus.innerHTML = `<span class="success">Заказ подтвержден!</span> Номер заказа: <strong>#${orderId}</strong>`;
+                    cart.clear();
+                    updateSticky();
+                } else {
+                    throw new Error(data?.message || 'Не удалось подтвердить заказ');
+                }
+            } catch (err){
+                els.confirmStatus.textContent = `Не удалось отправить заказ. ${err.message || err}`;
+                els.confirmStatus.className = 'error';
+            } finally {
+                els.confirmOrderBtn.disabled = false;
+                els.confirmOrderBtn.textContent = 'Подтвердить';
+            }
+        });
+
+        // Make all menu items clickable
+        document.querySelectorAll('.menu-item').forEach((el)=>{
+            el.addEventListener('click', ()=>{
+                const name = el.querySelector('.item-name')?.textContent?.trim();
+                const priceText = el.querySelector('.item-price')?.textContent;
+                const price = parsePrice(priceText);
+                if (!name || !price) return;
+                addToCart(name, price);
+            });
+        });
+
+        // Initial
+        updateSticky();
+    })();
+    </script>
 </body>
 </html>
