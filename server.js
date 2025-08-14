@@ -7,9 +7,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '';
 const ADMIN_CHAT_ID = Number(process.env.ADMIN_CHAT_ID || 701300453);
+const cors = require('cors');
 
 app.use(express.json({ limit: '256kb' }));
 app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
 // Serve static index.html
 app.use(express.static(__dirname));

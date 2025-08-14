@@ -208,12 +208,12 @@
         }
         .brand {
             font-family: 'Cinzel Decorative', cursive;
-            background: linear-gradient(180deg, #fff4d6 0%, #ffd27a 45%, #ffae00 60%, #c97a00 100%);
+            background: linear-gradient(90deg, #7efaff 0%, #5bd4ff 35%, #7e8cff 65%, #ff6bd6 100%);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 8px 18px rgba(0,0,0,0.25);
-            filter: drop-shadow(0 2px 0 rgba(255,212,128,0.9));
+            text-shadow: 0 0 8px rgba(126,250,255,0.35), 0 0 18px rgba(123,140,255,0.25);
+            filter: drop-shadow(0 2px 0 rgba(0,0,0,0.15));
         }
 
         @keyframes bounce {
@@ -509,6 +509,14 @@
 
     <script>
     (function(){
+        const params = new URLSearchParams(location.search);
+        const apiFromQuery = params.get('api');
+        if (apiFromQuery) {
+            try { new URL(apiFromQuery); localStorage.setItem('apiBase', apiFromQuery); } catch(e) {}
+        }
+        const storedApi = localStorage.getItem('apiBase') || '';
+        const API_BASE = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? '' : (storedApi || '');
+        window.__API_BASE = API_BASE;
         const formatCurrency = (n) => `${n.toLocaleString('ru-RU')}₽`;
         const cart = new Map(); // key: name, value: { name, price, qty }
 
@@ -664,13 +672,17 @@
             els.confirmOrderBtn.textContent = 'Отправка...';
             els.confirmStatus.textContent = '';
             try {
-                const resp = await fetch('/api/order', {
+                const resp = await fetch((API_BASE || '') + '/api/order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ items, total, table: tableNum })
                 });
                 if (!resp.ok){
-                    throw new Error(`Ошибка сервера: ${resp.status}`);
+                    let extra = '';
+                    if (resp.status === 405 || resp.status === 404) {
+                        extra = ' Проверьте адрес API. Если открыта страница GitHub Pages, добавьте параметр ?api=URL_ВАШЕГО_СЕРВЕРА.';
+                    }
+                    throw new Error(`Ошибка сервера: ${resp.status}.${extra}`);
                 }
                 const data = await resp.json();
                 if (data && data.ok){
