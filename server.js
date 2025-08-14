@@ -34,7 +34,7 @@ function generateOrderId() {
   const mi = String(now.getMinutes()).padStart(2, '0');
   const s = String(now.getSeconds()).padStart(2, '0');
   const rand = Math.floor(Math.random() * 90 + 10); // 10..99
-  return `HH${y}${m}${d}-${h}${mi}${s}-${rand}`;
+  return `GMH${y}${m}${d}-${h}${mi}${s}-${rand}`;
 }
 
 function validateOrderPayload(body) {

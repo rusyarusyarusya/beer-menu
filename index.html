@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hop House - Меню</title>
+    <title>Globus Music Hall - Меню</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -65,10 +68,12 @@
         }
 
         .header h1 {
+            font-family: 'Cinzel Decorative', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: 2.2em;
             color: #1a1a1a;
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 0 #ffd480, 0 4px 0 #ffb84d, 0 6px 10px rgba(0,0,0,0.35);
             margin-bottom: 5px;
         }
 
@@ -121,28 +126,31 @@
         }
 
         .featured-category {
-            background: linear-gradient(45deg, #ff8c00, #ffc107) !important;
+            background: radial-gradient(120% 120% at 50% 0%, #ffd15a 0%, #ff8c00 40%, #ff7a00 70%, #cc6a00 100%) !important;
             color: #1a1a1a !important;
             border-left: 4px solid #1a1a1a !important;
-            box-shadow: 0 8px 20px rgba(255, 140, 0, 0.3);
-            transform: scale(1.02);
-            font-size: 1.6em !important;
+            box-shadow: 0 12px 28px rgba(255, 140, 0, 0.4), inset 0 0 0 1px rgba(0,0,0,0.2);
+            transform: scale(1.03);
+            font-size: 1.7em !important;
             text-align: center;
             position: relative;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .featured-category::before {
-            content: '⭐ ГЛАВНЫЕ ХИТЫ ⭐';
+            content: 'ПИВНЫЕ ТАРЕЛКИ';
             position: absolute;
-            top: -8px;
+            top: -12px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.4em;
+            font-size: 0.38em;
             background: #1a1a1a;
             color: #ffc107;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: normal;
+            padding: 4px 10px;
+            border-radius: 999px;
+            letter-spacing: 1.2px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
         }
 
         .menu-item {
@@ -197,6 +205,15 @@
         .beer-icon {
             display: inline-block;
             animation: bounce 2s infinite;
+        }
+        .brand {
+            font-family: 'Cinzel Decorative', cursive;
+            background: linear-gradient(180deg, #fff4d6 0%, #ffd27a 45%, #ffae00 60%, #c97a00 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 8px 18px rgba(0,0,0,0.25);
+            filter: drop-shadow(0 2px 0 rgba(255,212,128,0.9));
         }
 
         @keyframes bounce {
@@ -286,8 +303,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1><span class="beer-icon">🍺</span> HOP HOUSE</h1>
-            <div class="subtitle">Крафтовый пивной бар</div>
+            <h1><span class="beer-icon">🍺</span> <span class="brand">Globus Music Hall</span></h1>
+            <div class="subtitle">Концертный зал</div>
         </div>
 
         <div class="menu-content">
